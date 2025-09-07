@@ -1,0 +1,5 @@
+{
+  "name": "Gerador de Gráficos com IA",
+  "description": "Um assistente de IA que recomenda o tipo de gráfico ideal com base na descrição dos seus dados e no seu objetivo de visualização. Obtenha sugestões claras e exemplos visuais instantaneamente.",
+  "requestFramePermissions": []
+}
