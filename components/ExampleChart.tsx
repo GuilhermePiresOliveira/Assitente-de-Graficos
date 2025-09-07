@@ -41,6 +41,13 @@ const stackedBarData = [
     { name: 'Trim 4', iOS: 2780, Android: 3908 },
 ];
 
+const histogramData = [
+    { name: '60-69', Frequência: 2 },
+    { name: '70-79', Frequência: 6 },
+    { name: '80-89', Frequência: 8 },
+    { name: '90-100', Frequência: 9 },
+];
+
 
 const ExampleChart: React.FC<ExampleChartProps> = ({ chartType }) => {
   const renderChart = () => {
@@ -125,6 +132,17 @@ const ExampleChart: React.FC<ExampleChartProps> = ({ chartType }) => {
             <Legend />
             <Scatter name="Produtos" data={scatterData} fill="#8884d8" />
           </ScatterChart>
+        );
+      case 'Histogram':
+        return (
+            <BarChart data={histogramData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                <XAxis dataKey="name" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}/>
+                <Legend />
+                <Bar dataKey="Frequência" fill="#ffc658" />
+            </BarChart>
         );
       default:
         return <div className="text-center text-slate-500">Exemplo de gráfico para '{chartType}' não disponível.</div>;

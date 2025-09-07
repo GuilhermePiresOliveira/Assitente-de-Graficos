@@ -39,6 +39,11 @@ const exampleData: { chartType: ChartType; title: string; description: string }[
     description: 'Compara a composição de diferentes grupos. Cada barra representa um total, e os segmentos mostram a contribuição de cada subcategoria.',
   },
   {
+    chartType: 'Histogram',
+    title: 'Distribuição de Notas de Prova',
+    description: 'Mostra a frequência de valores em intervalos (bins). Perfeito para entender a distribuição de um conjunto de dados, como as notas em uma turma.',
+  },
+  {
     chartType: 'Scatter',
     title: 'Correlação: Investimento vs. Vendas',
     description: 'Usado para visualizar a relação e a correlação entre duas variáveis numéricas. Cada ponto no gráfico representa um par de valores.',
