@@ -23,7 +23,27 @@ export const getChartRecommendation = async (dataDescription: string, objective:
       throw new Error(errorMessage);
     }
 
-    return await response.json();
+    // A resposta agora é um stream. Precisamos lê-la por completo.
+    if (!response.body) {
+      throw new Error("A resposta do serviço está vazia.");
+    }
+    
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let accumulatedText = '';
+    
+    // Ler o stream até o fim
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      accumulatedText += decoder.decode(value, { stream: true });
+    }
+    
+    // Após o stream terminar, fazer o parse do JSON completo
+    return JSON.parse(accumulatedText) as ChartRecommendation;
+
   } catch (error) {
     console.error("Erro ao buscar recomendação:", error);
     // Re-lança o erro com a mensagem específica para ser exibido na UI.

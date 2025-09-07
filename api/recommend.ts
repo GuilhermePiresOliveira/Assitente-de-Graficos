@@ -1,6 +1,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { ChartRecommendation } from '../types';
 
+// Configuração específica da Vercel para executar esta função na Edge Network.
+// Isso é crucial para a performance e para evitar timeouts.
+export const config = {
+  runtime: 'edge',
+};
+
 // Este código roda no servidor, não no navegador do usuário.
 // A chave de API é lida de forma segura a partir das variáveis de ambiente do servidor.
 if (!process.env.API_KEY) {
@@ -79,7 +85,8 @@ export default async function handler(request: Request): Promise<Response> {
       Sua tarefa é analisar a solicitação e retornar a recomendação no formato JSON especificado. A resposta DEVE estar em português.
     `;
 
-    const response = await ai.models.generateContent({
+    // Usar a API de streaming para respostas mais rápidas
+    const stream = await ai.models.generateContentStream({
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
@@ -89,17 +96,34 @@ export default async function handler(request: Request): Promise<Response> {
       },
     });
 
-    const jsonText = response.text.trim();
-    const parsedJson = JSON.parse(jsonText) as ChartRecommendation;
+    // Criar um ReadableStream para enviar a resposta da IA diretamente para o cliente
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder();
+        for await (const chunk of stream) {
+          const text = chunk.text;
+          if (text) {
+            // Enviar cada pedaço de texto assim que ele chegar
+            controller.enqueue(encoder.encode(text));
+          }
+        }
+        controller.close();
+      },
+    });
 
-    return new Response(JSON.stringify(parsedJson), {
+    // Retornar o stream diretamente para o cliente
+    return new Response(readableStream, {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-cache', // Garantir que o cliente receba dados novos
+      },
     });
 
   } catch (error) {
     console.error("Erro na função de recomendação:", error);
-    return new Response(JSON.stringify({ error: 'Falha ao processar a recomendação da IA.' }), {
+    const errorMessage = error instanceof Error ? error.message : 'Falha ao processar a recomendação da IA.';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
