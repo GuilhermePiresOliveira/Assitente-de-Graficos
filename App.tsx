@@ -28,7 +28,11 @@ const App: React.FC = () => {
       setRecommendation(result);
     } catch (err) {
       console.error(err);
-      setError('Ocorreu um erro ao buscar a recomendação. O serviço pode estar indisponível. Tente novamente.');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocorreu um erro desconhecido ao buscar a recomendação. Tente novamente.');
+      }
     } finally {
       setIsLoading(false);
     }
