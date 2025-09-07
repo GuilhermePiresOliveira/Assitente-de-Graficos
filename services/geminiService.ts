@@ -1,12 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { ChartRecommendation } from '../types';
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const guideContent = `
 ### O Guia Definitivo para Escolher o Gráfico Certo
 O segredo é responder à pergunta: Qual é a principal mensagem que eu quero passar?
@@ -49,6 +43,11 @@ const responseSchema = {
 };
 
 export const getChartRecommendation = async (dataDescription: string, objective: string): Promise<ChartRecommendation> => {
+  if (!process.env.API_KEY) {
+    throw new Error("A chave da API do Google não está configurada no ambiente.");
+  }
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
   const prompt = `
     Com base no guia de visualização de dados e na solicitação do usuário, recomende o melhor tipo de gráfico.
 
@@ -79,7 +78,7 @@ export const getChartRecommendation = async (dataDescription: string, objective:
     return parsedJson as ChartRecommendation;
 
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    throw new Error("Failed to get chart recommendation from Gemini API.");
+    console.error("Erro ao chamar a API Gemini:", error);
+    throw new Error("A API Gemini retornou um erro. Verifique o console para mais detalhes.");
   }
 };

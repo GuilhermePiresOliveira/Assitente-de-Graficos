@@ -26,7 +26,11 @@ const App: React.FC = () => {
       const result = await getChartRecommendation(dataDescription, objective);
       setRecommendation(result);
     } catch (err) {
-      setError('Ocorreu um erro ao buscar a recomendação. Por favor, tente novamente.');
+      if (err instanceof Error && err.message.includes("API")) {
+        setError("Erro de Configuração: A chave da API do Google não foi encontrada. Verifique as variáveis de ambiente do seu projeto.");
+      } else {
+        setError('Ocorreu um erro ao buscar a recomendação. Por favor, tente novamente.');
+      }
       console.error(err);
     } finally {
       setIsLoading(false);
