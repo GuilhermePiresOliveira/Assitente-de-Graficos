@@ -4,6 +4,7 @@ import { getChartRecommendation } from './services/geminiService';
 import InputForm from './components/InputForm';
 import RecommendationDisplay from './components/RecommendationDisplay';
 import ChartGuide from './components/ChartGuide';
+import ChartExamples from './components/ChartExamples';
 
 const App: React.FC = () => {
   const [dataDescription, setDataDescription] = useState<string>('');
@@ -70,7 +71,10 @@ const App: React.FC = () => {
         </div>
         
         {!recommendation && !isLoading && !error && (
-            <ChartGuide />
+            <>
+              <ChartGuide />
+              <ChartExamples />
+            </>
         )}
       </main>
       <footer className="text-center py-6 text-slate-500 text-sm">
