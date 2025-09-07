@@ -1,10 +1,9 @@
-import React, { useState, useCallback, lazy, Suspense, useEffect } from 'react';
+import React, { useState, useCallback, lazy, Suspense } from 'react';
 import type { ChartRecommendation } from './types';
 import { getChartRecommendation } from './services/geminiService';
 import InputForm from './components/InputForm';
 import RecommendationDisplay from './components/RecommendationDisplay';
 import ChartGuide from './components/ChartGuide';
-import ApiKeySetup from './components/ApiKeyError';
 
 const ChartExamples = lazy(() => import('./components/ChartExamples'));
 
@@ -14,27 +13,10 @@ const App: React.FC = () => {
   const [recommendation, setRecommendation] = useState<ChartRecommendation | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [apiKey, setApiKey] = useState<string | null>(null);
-
-  useEffect(() => {
-    const savedApiKey = sessionStorage.getItem('GEMINI_API_KEY');
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-    }
-  }, []);
-
-  const handleApiKeySubmit = (key: string) => {
-    setApiKey(key);
-    sessionStorage.setItem('GEMINI_API_KEY', key);
-  };
 
   const handleSubmit = useCallback(async () => {
     if (!dataDescription || !objective) {
       setError('Por favor, preencha a descrição dos dados e o objetivo.');
-      return;
-    }
-    if (!apiKey) {
-      setError('A chave de API não está configurada.');
       return;
     }
     setIsLoading(true);
@@ -42,22 +24,15 @@ const App: React.FC = () => {
     setRecommendation(null);
 
     try {
-      const result = await getChartRecommendation(dataDescription, objective, apiKey);
+      const result = await getChartRecommendation(dataDescription, objective);
       setRecommendation(result);
     } catch (err) {
       console.error(err);
-      setError('A chamada para a IA falhou. Verifique se sua chave de API é válida e tente novamente.');
-      // Limpa a chave inválida para forçar a reconfiguração
-      setApiKey(null);
-      sessionStorage.removeItem('GEMINI_API_KEY');
+      setError('Ocorreu um erro ao buscar a recomendação. O serviço pode estar indisponível. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
-  }, [dataDescription, objective, apiKey]);
-
-  if (!apiKey) {
-    return <ApiKeySetup onApiKeySubmit={handleApiKeySubmit} />;
-  }
+  }, [dataDescription, objective]);
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200 font-sans relative">

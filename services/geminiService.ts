@@ -1,83 +1,26 @@
-import { GoogleGenAI, Type } from "@google/genai";
 import type { ChartRecommendation } from '../types';
 
-const guideContent = `
-### O Guia Definitivo para Escolher o Gráfico Certo
-O segredo é responder à pergunta: Qual é a principal mensagem que eu quero passar?
-
-#### 1. Para mostrar Evolução ou Tendência ao Longo do Tempo
-- **Gráfico de Linha (Line):** Mostrar a evolução de uma ou mais variáveis contínuas ao longo do tempo.
-- **Gráfico de Área (Area):** Similar ao de linha, mas enfatiza o volume ou a magnitude da mudança.
-- **Gráfico de Coluna (Column):** Comparar valores em pontos discretos no tempo.
-
-#### 2. Para Comparar Categorias
-- **Gráfico de Colunas (Column):** Comparar valores entre poucas categorias.
-- **Gráfico de Barras (Bar):** Ótimo quando os nomes das categorias são longos ou há muitas categorias.
-
-#### 3. Para mostrar a Composição (Partes de um Todo)
-- **Gráfico de Pizza ou Rosca (Pie, Donut):** Mostrar a proporção de pouquíssimas categorias (5 ou menos) quando a soma é 100%.
-- **Gráfico de Barras Empilhadas (Stacked Bar):** Alternativa superior à pizza para comparar a composição de vários grupos.
-
-#### 4. Para ver a Distribuição de Dados
-- **Histograma (Histogram):** Mostrar a frequência de valores de uma única variável em intervalos.
-
-#### 5. Para encontrar Relação ou Correlação entre Variáveis
-- **Gráfico de Dispersão (Scatter):** Mostrar a relação entre duas variáveis numéricas.
-`;
-
-const responseSchema = {
-  type: Type.OBJECT,
-  properties: {
-    chartType: {
-      type: Type.STRING,
-      description: "O nome do tipo de gráfico recomendado em inglês.",
-      enum: ['Line', 'Area', 'Column', 'Bar', 'Pie', 'Donut', 'Stacked Bar', 'Histogram', 'Scatter']
-    },
-    reasoning: {
-      type: Type.STRING,
-      description: "Uma explicação clara e concisa em Português do Brasil, com no máximo 3 frases, sobre por que este gráfico é a melhor escolha para os dados e o objetivo do usuário."
-    }
-  },
-  required: ['chartType', 'reasoning']
-};
-
-export const getChartRecommendation = async (dataDescription: string, objective: string, apiKey: string): Promise<ChartRecommendation> => {
-  if (!apiKey) {
-    throw new Error("A chave da API do Google não foi fornecida.");
-  }
-  const ai = new GoogleGenAI({ apiKey });
-
-  const prompt = `
-    Com base no guia de visualização de dados e na solicitação do usuário, recomende o melhor tipo de gráfico.
-
-    GUIA:
-    ${guideContent}
-
-    SOLICITAÇÃO DO USUÁRIO:
-    - Descrição dos Dados: "${dataDescription}"
-    - Objetivo: "${objective}"
-
-    Sua tarefa é analisar a solicitação e retornar a recomendação no formato JSON especificado. A resposta DEVE estar em português.
-  `;
-  
+export const getChartRecommendation = async (dataDescription: string, objective: string): Promise<ChartRecommendation> => {
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: responseSchema,
-        temperature: 0.2,
+    const response = await fetch('/api/recommend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ dataDescription, objective }),
     });
 
-    const jsonText = response.text.trim();
-    const parsedJson = JSON.parse(jsonText);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'A API retornou um erro.');
+    }
 
-    return parsedJson as ChartRecommendation;
-
+    return await response.json();
   } catch (error) {
-    console.error("Erro ao chamar a API Gemini:", error);
-    throw new Error("A API Gemini retornou um erro. Verifique se sua chave é válida.");
+    console.error("Erro ao buscar recomendação:", error);
+    if (error instanceof Error) {
+        throw new Error(`Falha na comunicação com o serviço: ${error.message}`);
+    }
+    throw new Error("Ocorreu um erro desconhecido ao buscar a recomendação.");
   }
 };
