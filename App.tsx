@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, lazy, Suspense } from 'react';
 import type { ChartRecommendation } from './types';
 import { getChartRecommendation } from './services/geminiService';
 import InputForm from './components/InputForm';
 import RecommendationDisplay from './components/RecommendationDisplay';
 import ChartGuide from './components/ChartGuide';
-import ChartExamples from './components/ChartExamples';
+
+const ChartExamples = lazy(() => import('./components/ChartExamples'));
 
 const App: React.FC = () => {
   const [dataDescription, setDataDescription] = useState<string>('');
@@ -77,7 +78,14 @@ const App: React.FC = () => {
         {!recommendation && !isLoading && !error && (
             <>
               <ChartGuide />
-              <ChartExamples />
+              <Suspense fallback={
+                <div className="flex flex-col items-center justify-center p-8 mt-16 bg-slate-800/60 rounded-xl border border-slate-700">
+                  <div className="w-8 h-8 border-4 border-t-transparent border-cyan-400 rounded-full animate-spin"></div>
+                  <p className="mt-4 text-slate-300">Carregando exemplos de gráficos...</p>
+                </div>
+              }>
+                <ChartExamples />
+              </Suspense>
             </>
         )}
       </main>

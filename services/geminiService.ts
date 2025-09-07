@@ -43,10 +43,12 @@ const responseSchema = {
 };
 
 export const getChartRecommendation = async (dataDescription: string, objective: string): Promise<ChartRecommendation> => {
-  if (!process.env.API_KEY) {
+  const apiKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : undefined;
+
+  if (!apiKey) {
     throw new Error("A chave da API do Google não está configurada no ambiente.");
   }
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey });
 
   const prompt = `
     Com base no guia de visualização de dados e na solicitação do usuário, recomende o melhor tipo de gráfico.
