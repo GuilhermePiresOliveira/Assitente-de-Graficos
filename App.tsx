@@ -33,7 +33,10 @@ const App: React.FC = () => {
   }, [dataDescription, objective]);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-200 font-sans">
+    <div className="min-h-screen bg-slate-900 text-slate-200 font-sans relative">
+      <div className="absolute top-4 right-6 text-xs text-slate-500 hover:text-slate-300 transition-colors duration-300">
+        <p>Criado por Guilherme Pires</p>
+      </div>
       <main className="container mx-auto px-4 py-8 md:py-12">
         <header className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 mb-2">
