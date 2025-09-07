@@ -42,11 +42,9 @@ const responseSchema = {
   required: ['chartType', 'reasoning']
 };
 
-export const getChartRecommendation = async (dataDescription: string, objective: string): Promise<ChartRecommendation> => {
-  const apiKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : undefined;
-
+export const getChartRecommendation = async (dataDescription: string, objective: string, apiKey: string): Promise<ChartRecommendation> => {
   if (!apiKey) {
-    throw new Error("A chave da API do Google não está configurada no ambiente.");
+    throw new Error("A chave da API do Google não foi fornecida.");
   }
   const ai = new GoogleGenAI({ apiKey });
 
@@ -81,6 +79,6 @@ export const getChartRecommendation = async (dataDescription: string, objective:
 
   } catch (error) {
     console.error("Erro ao chamar a API Gemini:", error);
-    throw new Error("A API Gemini retornou um erro. Verifique o console para mais detalhes.");
+    throw new Error("A API Gemini retornou um erro. Verifique se sua chave é válida.");
   }
 };
