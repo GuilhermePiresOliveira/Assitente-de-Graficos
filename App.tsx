@@ -4,6 +4,7 @@ import { getChartRecommendation } from './services/geminiService';
 import InputForm from './components/InputForm';
 import RecommendationDisplay from './components/RecommendationDisplay';
 import ChartGuide from './components/ChartGuide';
+import ApiKeyError from './components/ApiKeyError';
 
 const ChartExamples = lazy(() => import('./components/ChartExamples'));
 
@@ -13,6 +14,7 @@ const App: React.FC = () => {
   const [recommendation, setRecommendation] = useState<ChartRecommendation | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [showApiKeyError, setShowApiKeyError] = useState<boolean>(false);
 
   const handleSubmit = useCallback(async () => {
     if (!dataDescription || !objective) {
@@ -21,6 +23,7 @@ const App: React.FC = () => {
     }
     setIsLoading(true);
     setError(null);
+    setShowApiKeyError(false);
     setRecommendation(null);
 
     try {
@@ -28,7 +31,7 @@ const App: React.FC = () => {
       setRecommendation(result);
     } catch (err) {
       if (err instanceof Error && err.message.includes("API")) {
-        setError("Erro de Configuração: A chave da API do Google não foi encontrada. Verifique as variáveis de ambiente do seu projeto.");
+        setShowApiKeyError(true);
       } else {
         setError('Ocorreu um erro ao buscar a recomendação. Por favor, tente novamente.');
       }
@@ -71,11 +74,12 @@ const App: React.FC = () => {
               <p className="mt-4 text-slate-300">Analisando e buscando a melhor visualização...</p>
             </div>
           )}
-          {error && <div className="text-center p-6 bg-red-900/50 border border-red-700 text-red-300 rounded-2xl">{error}</div>}
+          {showApiKeyError && <ApiKeyError />}
+          {error && !showApiKeyError && <div className="text-center p-6 bg-red-900/50 border border-red-700 text-red-300 rounded-2xl">{error}</div>}
           {recommendation && <RecommendationDisplay recommendation={recommendation} />}
         </div>
         
-        {!recommendation && !isLoading && !error && (
+        {!recommendation && !isLoading && !error && !showApiKeyError && (
             <>
               <ChartGuide />
               <Suspense fallback={
