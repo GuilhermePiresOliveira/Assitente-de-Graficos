@@ -20,7 +20,6 @@ O segredo é responder à pergunta: Qual é a principal mensagem que eu quero pa
 
 #### 4. Para ver a Distribuição de Dados
 - **Histograma (Histogram):** Mostrar a frequência de valores de uma única variável em intervalos.
-- **Box Plot (Box Plot):** Resumir a distribuição mostrando mediana, quartis e outliers.
 
 #### 5. Para encontrar Relação ou Correlação entre Variáveis
 - **Gráfico de Dispersão (Scatter):** Mostrar a relação entre duas variáveis numéricas.
@@ -32,7 +31,7 @@ const responseSchema = {
     chartType: {
       type: Type.STRING,
       description: "O nome do tipo de gráfico recomendado em inglês.",
-      enum: ['Line', 'Area', 'Column', 'Bar', 'Pie', 'Donut', 'Stacked Bar', 'Histogram', 'Box Plot', 'Scatter']
+      enum: ['Line', 'Area', 'Column', 'Bar', 'Pie', 'Donut', 'Stacked Bar', 'Histogram', 'Scatter']
     },
     reasoning: {
       type: Type.STRING,

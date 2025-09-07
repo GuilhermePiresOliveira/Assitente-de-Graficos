@@ -22,8 +22,8 @@ const guideData = [
   {
     title: "Distribuição de Dados",
     icon: "fa-chart-simple",
-    charts: "Histograma, Box Plot",
-    description: "Para entender como seus dados estão espalhados, a frequência e os valores atípicos.",
+    charts: "Histograma",
+    description: "Para entender como seus dados estão espalhados e a frequência de valores.",
   },
   {
     title: "Relação entre Variáveis",

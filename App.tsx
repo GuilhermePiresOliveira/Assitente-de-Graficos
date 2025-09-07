@@ -4,7 +4,7 @@ import { getChartRecommendation } from './services/geminiService';
 import InputForm from './components/InputForm';
 import RecommendationDisplay from './components/RecommendationDisplay';
 import ChartGuide from './components/ChartGuide';
-import ApiKeySetup from './components/ApiKeySetup';
+import ApiKeySetup from './components/ApiKeyError';
 
 const ChartExamples = lazy(() => import('./components/ChartExamples'));
 

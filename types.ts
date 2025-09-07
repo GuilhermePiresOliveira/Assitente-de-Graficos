@@ -7,7 +7,6 @@ export type ChartType =
   | 'Donut' 
   | 'Stacked Bar' 
   | 'Histogram' 
-  | 'Box Plot' 
   | 'Scatter';
 
 export interface ChartRecommendation {

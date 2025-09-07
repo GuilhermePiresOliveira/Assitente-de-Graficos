@@ -16,7 +16,6 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
     'Donut': 'Gráfico de Rosca',
     'Stacked Bar': 'Gráfico de Barras Empilhadas',
     'Histogram': 'Histograma',
-    'Box Plot': 'Box Plot',
     'Scatter': 'Gráfico de Dispersão'
   };
   
@@ -29,7 +28,6 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
     'Donut': 'fa-chart-pie',
     'Stacked Bar': 'fa-chart-bar',
     'Histogram': 'fa-chart-simple',
-    'Box Plot': 'fa-box',
     'Scatter': 'fa-circle-nodes'
   };
 
